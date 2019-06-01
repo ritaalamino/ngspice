@@ -1,0 +1,31 @@
+*------ CADEIA DE INVERSORES
+
+*---Include da tecnologia---
+.include 32nm_HP.pm
+
+*--- Declarando um sub-circuito ---
+.SUBCKT INV in out supply ground
+M1 out in supply supply pmos l=32n w=150n
+M2 out in ground ground nmos l=32n w=100n
+.ends INV
+
+*----Declaracao das fontes---
+* Fonte de Alimentação
+Vvdd vdd gnd 0.9V
+* Fonte descrevendo o sinal de entrada
+Va a gnd PULSE (0 0.9 50p 10p 10p 100p 200p)
+
+*---- Declaração de uma cadeia com 5 inversores
+Xinv1 a n1 vdd gnd INV
+Xinv2 n1 n2 vdd gnd INV
+Xinv3 n2 n3 vdd gnd INV
+Xinv4 n3 n4 vdd gnd INV
+Xinv5 n4 saida vdd gnd INV
+
+* Capacitância/Circuito de Saída
+Cload saida gnd 1f
+
+*----Definicao do tipo de simulacao
+.tran 0.1p 400p
+
+.end

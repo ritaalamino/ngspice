@@ -1,0 +1,38 @@
+*------ INVERSOR
+
+*---Include da tecnologia---
+.include 32nm_HP.pm
+
+*----Declaracao das fontes---
+* Fonte de Alimentação
+Vvdd vdd gnd 0.9V
+* Fonte descrevendo o sinal de entrada
+Va a gnd pwl (0n 0 0.1n 0 0.12n 0.9 0.3n 0.9 0.32n 0)
+
+*---- Declaração do Inversor
+*----Rede pull-up
+*M<nome> <drain> <gate> <source> <bulk> <tipo> L=<Comprimento do canal do transistor> W=<Largura do canal do Transistor>
+M1 out a vdd vdd pmos l=32n w=160n
+
+*----Rede pull-down
+M3 out a gnd gnd nmos l=32n w=64n
+
+* Capacitância/Circuito de Saída
+*Cload out gnd 1f
+*M12 out2 out vdd vdd pmos l=32n w=512n
+*M32 out2 out gnd gnd nmos l=32n w=256n
+
+*----Definicao do tipo de simulacao
+.tran 0.1p 0.5n
+
+*---- Calculo dos atrasos
+
+*---- Tempo de propagacao
+.measure tran tphl_a trig v(a) val=0.5 rise=1 targ V(out) val=0.5 fall=1
+.measure tran tplh_a trig v(a) val=0.5 fall=1 targ V(out) val=0.5 rise=1
+
+*---- Tempo de transicao
+.measure tran tfall_a trig v(out) val=0.8 fall=1 targ v(out) val=0.2 fall=1
+.measure tran trise_a trig v(out) val=0.2 rise=1 targ v(out) val=0.8 rise=1
+
+.end

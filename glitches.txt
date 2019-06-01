@@ -1,0 +1,45 @@
+*------ Simulando um Glitch
+
+*---Include da tecnologia---
+.include 32nm_HP.pm
+
+*--- Declarando um sub-circuito ---
+.SUBCKT INV in out supply ground
+M1 out in supply supply pmos l=32n w=150n
+M2 out in ground ground nmos l=32n w=100n
+.ends INV
+
+.SUBCKT AND in1 in2 out aliment terra
+MP1 nand  in1 aliment aliment pmos l=32n w=150n
+MP2 nand  in2 aliment aliment pmos l=32n w=150n
+MN1 nand  in1 nodo1   terra   nmos l=32n w=200n
+MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
+Xinv nand out aliment terra INV
+.ends AND
+
+*----Declaracao das fontes---
+* Fonte de Alimentação
+Vvdd vdd gnd 0.9V
+* Fonte descrevendo o sinal de entrada
+Va a gnd PULSE (0 0.9 50p 5p 5p 100p 200p)
+Vb b gnd PULSE (0.9 0 50p 5p 5p 100p 200p)
+
+*---- Declaração de uma cadeia com 5 inversores
+*Xinv1 a  n1  vdd gnd INV
+*Xinv2 n1 n2  vdd gnd INV
+*Xinv3 n2 n3  vdd gnd INV
+*Xinv4 n3 n4  vdd gnd INV
+*Xinv5 n4 n5  vdd gnd INV
+*Xinv6 n5 n6  vdd gnd INV
+*Xinv7 n6 n7  vdd gnd INV
+*Xinv8 n7 ina vdd gnd INV
+
+Xand a b saida vdd gnd AND
+
+* Capacitância/Circuito de Saída
+Cload saida gnd 1f
+
+*----Definicao do tipo de simulacao
+.tran 0.1p 300p
+
+.end

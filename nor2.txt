@@ -1,0 +1,43 @@
+*------ NOR2
+
+*---Include da tecnologia---
+.include 32nm_HP.pm
+
+
+*----Declaracao das fontes---
+Vvdd vdd gnd 0.9V
+Va a gnd pwl (0n 0 3n 0 3.02n 0.9 4n 0.9 4.02n 0 5n 0)
+Vb b gnd pwl (0n 0 1n 0 1.02n 0.9 2n 0.9 2.02n 0 5n 0)
+
+*----Netlist da NOR2 
+
+*----Rede pull-up
+M1 vdd a nd1 vdd pmos l=32n w=320n
+M2 nd1 b out vdd pmos l=32n w=320n
+
+*----Rede pull-down
+M3 out a gnd gnd nmos l=32n w=64n
+M4 out b gnd gnd nmos l=32n w=64n
+
+* Capacitância de Saída
+Cload out gnd 1f
+
+*----Definicao do tipo de simulacao
+.tran 0.1p 6n
+
+*---- Calculo dos atrasos
+
+*---- Tempo de propagacao
+.measure tran tphl_b_a0 trig v(b) val=0.5 rise=1 targ V(out) val=0.5 fall=1
+.measure tran tplh_b_a0 trig v(b) val=0.5 fall=1 targ V(out) val=0.5 rise=1
+.measure tran tphl_a_b0 trig v(a) val=0.5 rise=1 targ v(out) val=0.5 fall=2
+.measure tran tphl_a_b0 trig v(a) val=0.5 fall=1 targ v(out) val=0.5 rise=2
+
+
+*---- Tempo de transicao
+.measure tran tfall_0_b trig v(out) val=0.8 fall=1 targ v(out) val=0.2 fall=1
+.measure tran trise_0_b trig v(out) val=0.2 rise=1 targ v(out) val=0.8 rise=1
+.measure tran tfall_a_1 trig v(out) val=0.8 fall=2 targ v(out) val=0.2 fall=2
+.measure tran trise_0_b trig v(out) val=0.2 rise=2 targ v(out) val=0.8 rise=2
+
+.end

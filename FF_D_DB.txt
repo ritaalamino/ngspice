@@ -1,0 +1,64 @@
+*------ Simulando um FF-D com Detector de borda
+
+*---Include da tecnologia---
+.include 32nm_HP.pm
+
+*--- Declarando um sub-circuito ---
+.SUBCKT INV in out supply ground
+M1 out in supply supply pmos l=32n w=150n
+M2 out in ground ground nmos l=32n w=100n
+.ends INV
+
+.SUBCKT AND in1 in2 out aliment terra
+MP1 nand  in1 aliment aliment pmos l=32n w=150n
+MP2 nand  in2 aliment aliment pmos l=32n w=150n
+MN1 nand  in1 nodo1   terra   nmos l=32n w=200n
+MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
+Xinv nand out aliment terra INV
+.ends AND
+
+.SUBCKT NOR in1 in2 out aliment terra
+MP1 nodo1 in1 aliment aliment pmos l=32n w=300n
+MP2 out   in2 nodo1   aliment pmos l=32n w=300n
+MN1 out   in1 terra   terra   nmos l=32n w=100n
+MN2 out   in2 terra   terra   nmos l=32n w=100n
+.ends NOR
+
+
+*----Declaracao das fontes---
+* Fonte de Alimentação
+Vvdd vdd gnd 0.9V
+* Fonte descrevendo o sinal de entrada
+Vd entrada gnd PULSE (0.9 0 1n 5p 5p 1n 2n)
+Vclk controle gnd PULSE (0.9 0 0.8n 5p 5p 1.5n 3n)
+*---- Declaração do circuito
+
+*Detector de bordas
+Xinv1 controle n1  vdd gnd INV
+Xinv2 n1  n2    vdd gnd INV
+Xinv3 n2  clk_d    vdd gnd INV
+*Xinv4 n3  n4    vdd gnd INV
+*Xinv5 n4  clk_d vdd gnd INV
+*Xinv6 n5  n6    vdd gnd INV
+*Xinv7 n6  n7    vdd gnd INV
+*Xinv8 n7  clk_d vdd gnd INV
+
+Xand controle clk_d en vdd gnd AND
+
+
+
+*** Latch D
+Xinvd entrada  dn vdd gnd INV
+Xand1 dn en rr  vdd gnd AND
+Xand2 entrada  en ss  vdd gnd AND
+Xnor1 ss saida  qb  vdd gnd NOR
+Xnor2 rr qb saida   vdd gnd NOR
+
+* Capacitância/Circuito de Saída
+*Cload1 q gnd 1f
+*Cload2 qb gnd 1f
+
+*----Definicao do tipo de simulacao
+.tran 10p 20n
+
+.end
