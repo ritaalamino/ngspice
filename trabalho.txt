@@ -53,12 +53,20 @@ Vb4 b4 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
 Ven cin gnd PULSE (0.9 0 10.5n 5p 5p 16n 28n)
 
 *---- Declaração do circuito
-Xsoma1 a1 b1 cp1dblue bg1pink vdd gnd
+Xsoma1 a1 b1 cp1dblue cg1pink vdd gnd
 Xsoma2 a2 b2 cp2black cg2lblue vdd gnd
 Xsoma3 a3 b3 cp3dgreen cg3red vdd gnd
 Xsoma4 a4 b4 cp4dpurple cg4lpurple vdd gnd
+
 Xinv01 cin inv01lgreen vdd gnd
 Xinv02 inv01lgreen inv02 vdd gnd
+
+Xinva1 cp1dblue cp1dbluei vdd gnd
+Xa11 cp1dbluei cg1pink a11out vdd gnd
+Xx1 inv02 a11out s1 vdd gnd
+
+Xa12 inv01lgreen cg1pink a12out vdd gnd
+
 
 *--Capacitancia/Circuito de Saida
 *Cload1 q gnd 1f
