@@ -1,0 +1,70 @@
+*------ Simulando um somador carry antecipado
+
+*---Include da tecnologia---
+.include 32nm_HP.pm
+
+*--- Declarando um sub-circuito ---
+.SUBCKT INV in out supply ground
+M1 out in supply supply pmos l=32n w=150n
+M2 out in ground ground nmos l=32n w=100n
+.ends INV
+
+.SUBCKT AND in1 in2 out aliment terra
+MP1 nand  in1 aliment aliment pmos l=32n w=150n
+MP2 nand  in2 aliment aliment pmos l=32n w=150n
+MN1 nand  in1 nodo1   terra   nmos l=32n w=200n
+MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
+Xinv nand out aliment terra INV
+.ends AND
+
+.SUBCKT NAND in1 in2 out aliment terra
+MP1 nand  in1 aliment aliment pmos l=32n w=150n
+MP2 nand  in2 aliment aliment pmos l=32n w=150n
+MN1 nand  in1 nodo1   terra   nmos l=32n w=200n
+MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
+.ends NAND
+
+.SUBCKT SOMA a1 b1 cp1 cg1 aliment terra
+Xnor nor a1 b1 cp1 vdd gnd NOR
+Xnand nand b1 a1 cg1 vdd gnd NAND
+.ends SOMA
+
+
+.SUBCKT NOR in1 in2 out aliment terra
+MP1 nodo1 in1 aliment aliment pmos l=32n w=300n
+MP2 out   in2 nodo1   aliment pmos l=32n w=300n
+MN1 out   in1 terra   terra   nmos l=32n w=100n
+MN2 out   in2 terra   terra   nmos l=32n w=100n
+.ends NOR
+
+*----Declaracao das fontes---
+* Fonte de Alimentação
+
+Vvdd vdd gnd 0.9V
+* Fonte descrevendo o sinal de entrada
+Va1 a1 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
+Vb1 b1 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
+Va2 a2 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
+Vb2 b2 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
+Va3 a3 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
+Vb3 b3 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
+Va4 a4 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
+Vb4 b4 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
+Ven cin gnd PULSE (0.9 0 10.5n 5p 5p 16n 28n)
+
+*---- Declaração do circuito
+Xsoma1 a1 b1 cp1dblue bg1pink vdd gnd
+Xsoma2 a2 b2 cp2black cg2lblue vdd gnd
+Xsoma3 a3 b3 cp3dgreen cg3red vdd gnd
+Xsoma4 a4 b4 cp4dpurple cg4lpurple vdd gnd
+Xinv01 cin inv01lgreen vdd gnd
+Xinv02 inv01lgreen inv02 vdd gnd
+
+*--Capacitancia/Circuito de Saida
+*Cload1 q gnd 1f
+*Cload2 qb gnd 1f
+
+*----Definicao do tipo de simulacao
+.tran 1p 50n
+
+.end
