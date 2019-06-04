@@ -18,17 +18,16 @@ Xinv nand out aliment terra INV
 .ends AND
 
 .SUBCKT NAND in1 in2 out aliment terra
-MP1 nand  in1 aliment aliment pmos l=32n w=150n
-MP2 nand  in2 aliment aliment pmos l=32n w=150n
-MN1 nand  in1 nodo1   terra   nmos l=32n w=200n
+MP1 out  in1 aliment aliment pmos l=32n w=150n
+MP2 out  in2 aliment aliment pmos l=32n w=150n
+MN1 out  in1 nodo1   terra   nmos l=32n w=200n
 MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
 .ends NAND
 
 .SUBCKT SOMA a1 b1 cp1 cg1 aliment terra
-Xnor nor a1 b1 cp1 vdd gnd NOR
-Xnand nand b1 a1 cg1 vdd gnd NAND
+Xnor a1 b1 cp1 vdd gnd NOR
+Xnand b1 a1 cg1 vdd gnd NAND
 .ends SOMA
-
 
 .SUBCKT NOR in1 in2 out aliment terra
 MP1 nodo1 in1 aliment aliment pmos l=32n w=300n

@@ -1,0 +1,53 @@
+*------ Simulando um somador carry antecipado
+
+*---Include da tecnologia---
+.include 32nm_HP.pm
+
+*--- Declarando um sub-circuito ---
+.SUBCKT INV in out supply ground
+M1 out in supply supply pmos l=32n w=150n
+M2 out in ground ground nmos l=32n w=100n
+.ends INV
+
+.SUBCKT NAND in1 in2 out aliment terra
+MP1 out  in1 aliment aliment pmos l=32n w=150n
+MP2 out  in2 aliment aliment pmos l=32n w=150n
+MN1 out  in1 nodo1   terra   nmos l=32n w=200n
+MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
+.ends NAND
+
+.SUBCKT NOR in1 in2 out aliment terra
+MP1 nodo1 in1 aliment aliment pmos l=32n w=300n
+MP2 out   in2 nodo1   aliment pmos l=32n w=300n
+MN1 out   in1 terra   terra   nmos l=32n w=100n
+MN2 out   in2 terra   terra   nmos l=32n w=100n
+.ends NOR
+
+.SUBCKT LATCH d clock out aliment terra
+Xinv2 d i2a2 vdd gnd INV
+Xa1 d clock a1n1 vdd gnd NAND
+Xa2 i2a2 clock a2n2 vdd gnd NAND
+Xn2 a2n2 out nout vdd gnd NAND
+Xn1 a1n1 nout out vdd gnd NAND
+.ends LATCH
+
+*----Declaracao das fontes---
+* Fonte de Alimentação
+Vvdd vdd gnd 0.9V
+* Fonte descrevendo o sinal de entrada
+Vd d gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
+Vclk clk gnd PULSE (0.9 0 10.5n 5p 5p 16n 28n)
+
+*---- Declaração do circuito
+Xinv1 clk outiclock vdd gnd INV
+Xmst d outiclock out1 vdd gnd LATCH
+Xesc out1 clk q vdd gnd LATCH
+
+*--Capacitancia/Circuito de Saida
+*Cload1 q gnd 1f
+*Cload2 qb gnd 1f
+
+*----Definicao do tipo de simulacao
+.tran 1n 50n
+
+.end
