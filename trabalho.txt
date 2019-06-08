@@ -24,10 +24,10 @@ MN1 out  in1 nodo1   terra   nmos l=32n w=200n
 MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
 .ends NAND
 
-.SUBCKT SOMA a1 b1 cp1 cg1 aliment terra
+.SUBCKT CGEN a1 b1 cp1 cg1 aliment terra
 Xnor a1 b1 cp1 vdd gnd NOR
 Xnand b1 a1 cg1 vdd gnd NAND
-.ends SOMA
+.ends CGEN
 
 .SUBCKT NOR in1 in2 out aliment terra
 MP1 nodo1 in1 aliment aliment pmos l=32n w=300n
@@ -35,6 +35,33 @@ MP2 out   in2 nodo1   aliment pmos l=32n w=300n
 MN1 out   in1 terra   terra   nmos l=32n w=100n
 MN2 out   in2 terra   terra   nmos l=32n w=100n
 .ends NOR
+
+.SUBCKT XOR in1 in2 out aliment terra
+Xinv1 in1 nin1 vdd gnd INV
+Xinv2 in2 nin2 vdd gnd INV
+Xand in1 nin2 a vdd gnd AND
+Xand2 in2 nin1 b vdd gnd AND
+XNOR a b c vdd gnd XNOR
+Xinv3 c out vdd gnd INV
+.ends XOR
+
+.SUBCKT 3AND in1 in2 in3 out aliment terra
+Xand1 in1 in2 in4 vdd gnd AND
+Xand2 in3 in4 out vdd gnd AND
+.ends 3AND
+
+.SUBCKT 4AND in1 in2 in3 in4 out aliment terra
+Xand1 in1 in2 in5 vdd gnd AND
+Xand2 in3 in4 in6 vdd gnd AND
+Xand3 in5 in6 out vdd gnd AND
+.ends 4AND
+
+.SUBCKT 5AND in1 in2 in3 in4 in5 out aliment terra
+Xand1 in1 in2 in6 vdd gnd AND
+Xand2 in3 in4 in7 vdd gnd AND
+Xand3 in5 in6 in8 vdd gnd AND
+Xand4 in7 in8 out vdd gnd AND
+.ends 4AND
 
 *----Declaracao das fontes---
 * Fonte de Alimentação
@@ -52,20 +79,55 @@ Vb4 b4 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
 Ven cin gnd PULSE (0.9 0 10.5n 5p 5p 16n 28n)
 
 *---- Declaração do circuito
-Xsoma1 a1 b1 cp1dblue cg1pink vdd gnd
-Xsoma2 a2 b2 cp2black cg2lblue vdd gnd
-Xsoma3 a3 b3 cp3dgreen cg3red vdd gnd
-Xsoma4 a4 b4 cp4dpurple cg4lpurple vdd gnd
+*ENTRADAS GERA CARRY
+Xsoma1 a1 b1 cp1dblue cg1pink vdd gnd CGEN
+Xsoma2 a2 b2 cp2black cg2lblue vdd gnd CGEN
+Xsoma3 a3 b3 cp3dgreen cg3red vdd gnd CGEN
+Xsoma4 a4 b4 cp4dpurple cg4lpurple vdd gnd CGEN
+*INVERSOR
+Xinv01 cin inv01lgreen vdd gnd INV
+Xinv02 inv01lgreen inv02 vdd gnd INV
+*SOMA 1
+Xinva11 cp1dblue cp1dbluei vdd gnd INV
+Xa11 cp1dbluei cg1pink a11out vdd gnd AND
+Xx1 inv02 a11out s1 vdd gnd XOR
+*GERA CARRY 1
+Xa12 inv01lgreen cg1pink a12out vdd gnd AND
+Xi1 cp1dblue i1out vdd gnd INV
+Xn1 a12out i1out cout1 vdd gnd NOR
 
-Xinv01 cin inv01lgreen vdd gnd
-Xinv02 inv01lgreen inv02 vdd gnd
+*SOMA 2
+Xinva21 cp2black cp2blacki vdd gnd INV
+Xa21 cp2blacki cg2lblue a21out vdd gnd AND
+Xx2 cout1 a21out s2 vdd gnd XOR
+*GERA CARRY 2
+Xa22 inv01lgreen cg1pink cg2lblue a22out vdd gnd 3AND
+Xa23 cg2lblue cp1dblue a23out vdd gnd AND
+Xi2 cp2black i2out vdd gnd INV
+Xn2 a22out a23out i2out cout2 vdd gnd 3NOR ******
 
-Xinva1 cp1dblue cp1dbluei vdd gnd
-Xa11 cp1dbluei cg1pink a11out vdd gnd
-Xx1 inv02 a11out s1 vdd gnd
+*SOMA 3
+Xinva31 cp3dgreen cp3dgreeni vdd gnd INV
+Xa31 cg3red cp3dgreeni a31out vdd gnd AND
+Xx3 cout2 a31out s3 vdd gnd XOR
+*GERA CARRY 3
+Xa32 inv01lgreen cg3red cg1pink cg2lblue a32out vdd gnd 4AND
+Xa33 cg3red cg2lblue cp1dblue a33out vdd gnd 3AND
+Xa34 cg3red cp2black a34out vdd gnd AND
+Xi3 cp3dgreen i3out vdd gnd INV
+Xn3 i3out a23out a33out a34out cout3 4NOR ******
 
-Xa12 inv01lgreen cg1pink a12out vdd gnd
-
+*SOMA 4
+Xinv41 cp4dpurple cp4dpurplei vdd gnd INV
+Xa41 cp4dpurplei cg4lpurple a41out vdd gnd AND
+Xx4 cout3 a41out s4 vdd gnd XOR
+*GERA CARRY 4
+Xa42 inv01lgreen cg1pink cg2lblue cg3red cg4lpurple a42out vdd gnd 5AND
+Xa43 cg3red cg4lpurple cg2lblue cp1dblue a43out vdd gnd 4AND
+Xa44 cg4lpurple cg3red cp2black a44out vdd gnd 3AND
+Xa45 cp3dgreen cg4lpurple a45out vdd gnd AND
+Xi4 cp4dpurple i4out vdd gnd INV
+Xn4 a42out a43out a44out a45out i4out cout4 vdd gnd 5NOR ******
 
 *--Capacitancia/Circuito de Saida
 *Cload1 q gnd 1f
