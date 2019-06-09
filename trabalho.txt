@@ -26,7 +26,7 @@ MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
 
 .SUBCKT CGEN a1 b1 cp1 cg1 aliment terra
 Xnor a1 b1 cp1 vdd gnd NOR
-Xnand b1 a1 cg1 vdd gnd NAND
+Xnand a1 b1 cg1 vdd gnd NAND
 .ends CGEN
 
 .SUBCKT NOR in1 in2 out aliment terra
@@ -41,7 +41,7 @@ Xinv1 in1 nin1 vdd gnd INV
 Xinv2 in2 nin2 vdd gnd INV
 Xand in1 nin2 a vdd gnd AND
 Xand2 in2 nin1 b vdd gnd AND
-XNOR a b c vdd gnd XNOR
+Xnor a b c vdd gnd NOR
 Xinv3 c out vdd gnd INV
 .ends XOR
 
@@ -61,7 +61,25 @@ Xand1 in1 in2 in6 vdd gnd AND
 Xand2 in3 in4 in7 vdd gnd AND
 Xand3 in5 in6 in8 vdd gnd AND
 Xand4 in7 in8 out vdd gnd AND
-.ends 4AND
+.ends 5AND
+
+.SUBCKT 3NOR in1 in2 in3 out aliment terra
+Xnor1 in1 in2 in4 vdd gnd NOR
+Xnor2 in3 in4 out vdd gnd NOR
+.ends 3NOR
+
+.SUBCKT 4NOR in1 in2 in3 in4 out aliment terra
+Xnor1 in1 in2 in5 vdd gnd NOR
+Xnor2 in3 in4 in6 vdd gnd NOR
+Xnor3 in5 in6 out vdd gnd NOR
+.ends 4NOR
+
+.SUBCKT 5NOR in1 in2 in3 in4 in5 out aliment terra
+Xnor1 in1 in2 in6 vdd gnd NOR
+Xnor2 in3 in4 in7 vdd gnd NOR
+Xnor3 in5 in6 in8 vdd gnd NOR
+Xnor4 in7 in8 out vdd gnd NOR
+.ends 5NOR
 
 *----Declaracao das fontes---
 * Fonte de Alimentação
@@ -80,8 +98,10 @@ Ven cin gnd PULSE (0.9 0 10.5n 5p 5p 16n 28n)
 
 *---- Declaração do circuito
 *ENTRADAS GERA CARRY
-Xsoma1 a1 b1 cp1dblue cg1pink vdd gnd CGEN
-Xsoma2 a2 b2 cp2black cg2lblue vdd gnd CGEN
+Xnor a1 b1 cp1dblue vdd gnd NOR
+Xnand a1 b1 cg1pink vdd gnd NAND **PROBLEMA NA CGEN
+*Xsoma1 a1 b1 cp1dblue cg1pink vdd gnd CGEN
+*Xsoma2 a2 b2 cp2black cg2lblue vdd gnd CGEN
 Xsoma3 a3 b3 cp3dgreen cg3red vdd gnd CGEN
 Xsoma4 a4 b4 cp4dpurple cg4lpurple vdd gnd CGEN
 *INVERSOR
@@ -104,7 +124,7 @@ Xx2 cout1 a21out s2 vdd gnd XOR
 Xa22 inv01lgreen cg1pink cg2lblue a22out vdd gnd 3AND
 Xa23 cg2lblue cp1dblue a23out vdd gnd AND
 Xi2 cp2black i2out vdd gnd INV
-Xn2 a22out a23out i2out cout2 vdd gnd 3NOR ******
+Xn2 a22out a23out i2out cout2 vdd gnd 3NOR
 
 *SOMA 3
 Xinva31 cp3dgreen cp3dgreeni vdd gnd INV
@@ -115,7 +135,7 @@ Xa32 inv01lgreen cg3red cg1pink cg2lblue a32out vdd gnd 4AND
 Xa33 cg3red cg2lblue cp1dblue a33out vdd gnd 3AND
 Xa34 cg3red cp2black a34out vdd gnd AND
 Xi3 cp3dgreen i3out vdd gnd INV
-Xn3 i3out a23out a33out a34out cout3 4NOR ******
+Xn3 i3out a32out a33out a34out cout3 vdd gnd 4NOR
 
 *SOMA 4
 Xinv41 cp4dpurple cp4dpurplei vdd gnd INV
@@ -127,13 +147,13 @@ Xa43 cg3red cg4lpurple cg2lblue cp1dblue a43out vdd gnd 4AND
 Xa44 cg4lpurple cg3red cp2black a44out vdd gnd 3AND
 Xa45 cp3dgreen cg4lpurple a45out vdd gnd AND
 Xi4 cp4dpurple i4out vdd gnd INV
-Xn4 a42out a43out a44out a45out i4out cout4 vdd gnd 5NOR ******
+Xn4 a42out a43out a44out a45out i4out cout4 vdd gnd 5NOR
 
 *--Capacitancia/Circuito de Saida
 *Cload1 q gnd 1f
 *Cload2 qb gnd 1f
 
 *----Definicao do tipo de simulacao
-.tran 1p 50n
+.tran 1n 50n
 
 .end
