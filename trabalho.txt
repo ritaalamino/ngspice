@@ -36,14 +36,20 @@ MN1 out   in1 terra   terra   nmos l=32n w=100n
 MN2 out   in2 terra   terra   nmos l=32n w=100n
 .ends NOR
 
-.SUBCKT XOR in1 in2 out aliment terra
-Xinv1 in1 nin1 vdd gnd INV
-Xinv2 in2 nin2 vdd gnd INV
-Xand in1 nin2 a vdd gnd AND
-Xand2 in2 nin1 b vdd gnd AND
-Xnor a b c vdd gnd NOR
-Xinv3 c out vdd gnd INV
-.ends XOR
+.Subckt XOR in1 in2 out aliment terra
+X1a in1 vdd gnd in1_not INV
+X1b in2 vdd gnd in2_not INV
+
+Mpa_n n1 in1_not vdd vdd PMOS W=128n L=32n
+Mpb out in2 n1 vdd PMOS W=128n L=32n
+Mpa n2 in1 vdd vdd PMOS W=128n L=32n
+Mpb_n out in2_not n2 vdd PMOS W=128n L=32n 
+
+Mnb n3 in2 gnd gnd NMOS W=64n L=32n
+Mna out in1 n3 gnd NMOS W=64n L=32n
+Mnb_n n4 in2_not gnd gnd NMOS W=64n L=32n
+Mna_n out in1_not n4 gnd NMOS W=64n L=32nx
+.Ends XOR
 
 .SUBCKT 3AND in1 in2 in3 out aliment terra
 Xand1 in1 in2 in4 vdd gnd AND
@@ -64,22 +70,29 @@ Xand4 in7 in8 out vdd gnd AND
 .ends 5AND
 
 .SUBCKT 3NOR in1 in2 in3 out aliment terra
-Xnor1 in1 in2 in4 vdd gnd NOR
-Xnor2 in3 in4 out vdd gnd NOR
+Xnor1 in1 in2 out1 vdd gnd NOR
+Xnor11 out1 out1 out2 vdd gnd NOR
+Xnor2 in3 out2 out3 vdd gnd NOR
 .ends 3NOR
 
 .SUBCKT 4NOR in1 in2 in3 in4 out aliment terra
-Xnor1 in1 in2 in5 vdd gnd NOR
-Xnor2 in3 in4 in6 vdd gnd NOR
-Xnor3 in5 in6 out vdd gnd NOR
+Xnor1 in1 in2 out1 vdd gnd NOR
+Xnor11 out1 out1 out11 vdd gnd NOR
+Xnor2 in3 in4 out2 vdd gnd NOR
+Xnor22 out2 out2 out22 vdd gnd NOR
+Xnor3 out11 out22 out vdd gnd NOR
 .ends 4NOR
 
 .SUBCKT 5NOR in1 in2 in3 in4 in5 out aliment terra
-Xnor1 in1 in2 in6 vdd gnd NOR
-Xnor2 in3 in4 in7 vdd gnd NOR
-Xnor3 in5 in6 in8 vdd gnd NOR
-Xnor4 in7 in8 out vdd gnd NOR
+Xnor1 in1 in2 out1 vdd gnd NOR
+Xnor11 out1 out1 out11 vdd gnd NOR
+Xnor2 in3 in4 out2 vdd gnd NOR
+Xnor22 out2 out2 out22 vdd gnd NOR
+Xnor3 in5 out11 out3 vdd gnd NOR
+Xnor33 out3 out3 out33 vdd gnd NOR
+Xnor4 out22 out33 out vdd gnd NOR
 .ends 5NOR
+
 
 *----Declaracao das fontes---
 * Fonte de Alimentação
@@ -97,16 +110,23 @@ Vb4 b4 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
 Ven cin gnd PULSE (0.9 0 10.5n 5p 5p 16n 28n)
 
 *---- Declaração do circuito
-*ENTRADAS GERA CARRY
-Xnor a1 b1 cp1dblue vdd gnd NOR
-Xnand a1 b1 cg1pink vdd gnd NAND **PROBLEMA NA CGEN
-*Xsoma1 a1 b1 cp1dblue cg1pink vdd gnd CGEN
-*Xsoma2 a2 b2 cp2black cg2lblue vdd gnd CGEN
-Xsoma3 a3 b3 cp3dgreen cg3red vdd gnd CGEN
-Xsoma4 a4 b4 cp4dpurple cg4lpurple vdd gnd CGEN
+*ENTRADAS GENERATE CARRY
+Xng a1 b1 cp1dblue vdd gnd NOR
+Xnp a1 b1 cg1pink vdd gnd NAND 
+
+Xng1 a2 b2 cp2black vdd gnd NOR
+Xnp1 a2 b2 cg2lblue vdd gnd NAND 
+
+Xng2 a3 b3 cp3dgreen vdd gnd NOR
+Xnp2 a3 b3 cg3red vdd gnd NAND 
+
+Xng3 a3 b3 cp4dpurple vdd gnd NOR
+Xnp3 a3 b3 cg4lpurple vdd gnd NAND 
+
 *INVERSOR
 Xinv01 cin inv01lgreen vdd gnd INV
 Xinv02 inv01lgreen inv02 vdd gnd INV
+
 *SOMA 1
 Xinva11 cp1dblue cp1dbluei vdd gnd INV
 Xa11 cp1dbluei cg1pink a11out vdd gnd AND
@@ -152,6 +172,16 @@ Xn4 a42out a43out a44out a45out i4out cout4 vdd gnd 5NOR
 *--Capacitancia/Circuito de Saida
 *Cload1 q gnd 1f
 *Cload2 qb gnd 1f
+* Capacitância da saída
+    Csum0 s1 gnd 1f
+    Csum1 s2 gnd 1f
+    Csum2 s3 gnd 1f
+    Csum3 s4 gnd 1f
+
+    Ccout1 cout1 gnd 1f
+    Ccout2 cout2 gnd 1f
+    Ccout3 cout3 gnd 1f
+    Ccout4 cout4 gnd 1f
 
 *----Definicao do tipo de simulacao
 .tran 1n 50n

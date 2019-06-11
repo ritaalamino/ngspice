@@ -51,3 +51,188 @@ Xesc out1 clk q vdd gnd LATCH
 .tran 1n 50n
 
 .end
+
+*------ Simulando um somador carry antecipado
+
+*---Include da tecnologia---
+.include 32nm_HP.pm
+
+*--- Declarando um sub-circuito ---
+.SUBCKT INV in out supply ground
+M1 out in supply supply pmos l=32n w=150n
+M2 out in ground ground nmos l=32n w=100n
+.ends INV
+
+.SUBCKT AND in1 in2 out aliment terra
+MP1 nand  in1 aliment aliment pmos l=32n w=150n
+MP2 nand  in2 aliment aliment pmos l=32n w=150n
+MN1 nand  in1 nodo1   terra   nmos l=32n w=200n
+MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
+Xinv nand out aliment terra INV
+.ends AND
+
+.SUBCKT NAND in1 in2 out aliment terra
+MP1 out  in1 aliment aliment pmos l=32n w=150n
+MP2 out  in2 aliment aliment pmos l=32n w=150n
+MN1 out  in1 nodo1   terra   nmos l=32n w=200n
+MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
+.ends NAND
+
+.SUBCKT NOR in1 in2 out aliment terra
+MP1 nodo1 in1 aliment aliment pmos l=32n w=300n
+MP2 out   in2 nodo1   aliment pmos l=32n w=300n
+MN1 out   in1 terra   terra   nmos l=32n w=100n
+MN2 out   in2 terra   terra   nmos l=32n w=100n
+.ends NOR
+
+.Subckt XOR in1 in2 out aliment terra
+X1a in1 vdd gnd in1_not INV
+X1b in2 vdd gnd in2_not INV
+
+Mpa_n n1 in1_not vdd vdd PMOS W=128n L=32n
+Mpb out in2 n1 vdd PMOS W=128n L=32n
+Mpa n2 in1 vdd vdd PMOS W=128n L=32n
+Mpb_n out in2_not n2 vdd PMOS W=128n L=32n 
+
+Mnb n3 in2 gnd gnd NMOS W=64n L=32n
+Mna out in1 n3 gnd NMOS W=64n L=32n
+Mnb_n n4 in2_not gnd gnd NMOS W=64n L=32n
+Mna_n out in1_not n4 gnd NMOS W=64n L=32nx
+.Ends XOR
+
+.SUBCKT XOR in1 in2 out aliment terra
+Xinv1 in1 nin1 vdd gnd INV
+Xinv2 in2 nin2 vdd gnd INV
+
+Xand in1 nin2 a vdd gnd AND
+Xand2 in2 nin1 b vdd gnd AND
+
+Xnor a b c vdd gnd NOR
+Xinv3 c out vdd gnd INV
+.ends XOR
+
+.SUBCKT 3AND in1 in2 in3 out aliment terra
+Xand1 in1 in2 in4 vdd gnd AND
+Xand2 in3 in4 out vdd gnd AND
+.ends 3AND
+
+.SUBCKT 4AND in1 in2 in3 in4 out aliment terra
+Xand1 in1 in2 in5 vdd gnd AND
+Xand2 in3 in4 in6 vdd gnd AND
+Xand3 in5 in6 out vdd gnd AND
+.ends 4AND
+
+.SUBCKT 5AND in1 in2 in3 in4 in5 out aliment terra
+Xand1 in1 in2 in6 vdd gnd AND
+Xand2 in3 in4 in7 vdd gnd AND
+Xand3 in5 in6 in8 vdd gnd AND
+Xand4 in7 in8 out vdd gnd AND
+.ends 5AND
+
+.SUBCKT 3NOR in1 in2 in3 out aliment terra
+Xnor1 in1 in2 out1 vdd gnd NOR
+Xnor11 out1 out1 out2 vdd gnd NOR
+Xnor2 in3 out2 out3 vdd gnd NOR
+.ends 3NOR
+
+.SUBCKT 4NOR in1 in2 in3 in4 out aliment terra
+Xnor1 in1 in2 out1 vdd gnd NOR
+Xnor11 out1 out1 out11 vdd gnd NOR
+Xnor2 in3 in4 out2 vdd gnd NOR
+Xnor22 out2 out2 out22 vdd gnd NOR
+Xnor3 out11 out22 out vdd gnd NOR
+.ends 4NOR
+
+.SUBCKT 5NOR in1 in2 in3 in4 in5 out aliment terra
+Xnor1 in1 in2 out1 vdd gnd NOR
+Xnor11 out1 out1 out11 vdd gnd NOR
+Xnor2 in3 in4 out2 vdd gnd NOR
+Xnor22 out2 out2 out22 vdd gnd NOR
+Xnor3 in5 out11 out3 vdd gnd NOR
+Xnor33 out3 out3 out33 vdd gnd NOR
+Xnor4 out22 out33 out vdd gnd NOR
+.ends 5NOR
+
+*----Declaracao das fontes---
+* Fonte de Alimentação
+Vvdd vdd gnd 0.9V
+
+* Fonte descrevendo o sinal de entrada
+Va1 a1 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
+Vb1 b1 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
+Va2 a2 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
+Vb2 b2 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
+Va3 a3 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
+Vb3 b3 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
+Va4 a4 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
+Vb4 b4 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
+Ven cin gnd PULSE (0.9 0 10.5n 5p 5p 16n 28n)
+
+*---- Declaração do circuito
+*ENTRADAS GENERATE CARRY
+Xnor a1 b1 cp1dblue vdd gnd NOR
+Xnand a1 b1 cg1pink vdd gnd NAND 
+
+Xnor a2 b2 cp2black vdd gnd NOR
+Xnand a2 b2 cg2lblue vdd gnd NAND 
+
+Xnor a3 b3 cp3dgreen vdd gnd NOR
+Xnand a3 b3 cg3red vdd gnd NAND 
+
+Xnor a3 b3 cp4dpurple vdd gnd NOR
+Xnand a3 b3 cg4lpurple vdd gnd NAND 
+
+*INVERSOR
+Xinv01 cin inv01lgreen vdd gnd INV
+Xinv02 inv01lgreen inv02 vdd gnd INV
+
+*SOMA 1
+Xinva11 cp1dblue cp1dbluei vdd gnd INV
+Xa11 cp1dbluei cg1pink a11out vdd gnd AND
+Xx1 inv02 a11out s1 vdd gnd XOR
+*GERA CARRY 1
+Xa12 inv01lgreen cg1pink a12out vdd gnd AND
+Xi1 cp1dblue i1out vdd gnd INV
+Xn1 a12out i1out cout1 vdd gnd NOR
+
+*SOMA 2
+Xinva21 cp2black cp2blacki vdd gnd INV
+Xa21 cp2blacki cg2lblue a21out vdd gnd AND
+Xx2 cout1 a21out s2 vdd gnd XOR
+*GERA CARRY 2
+Xa22 inv01lgreen cg1pink cg2lblue a22out vdd gnd 3AND
+Xa23 cg2lblue cp1dblue a23out vdd gnd AND
+Xi2 cp2black i2out vdd gnd INV
+Xn2 a22out a23out i2out cout2 vdd gnd 3NOR
+
+*SOMA 3
+Xinva31 cp3dgreen cp3dgreeni vdd gnd INV
+Xa31 cg3red cp3dgreeni a31out vdd gnd AND
+Xx3 cout2 a31out s3 vdd gnd XOR
+*GERA CARRY 3
+Xa32 inv01lgreen cg3red cg1pink cg2lblue a32out vdd gnd 4AND
+Xa33 cg3red cg2lblue cp1dblue a33out vdd gnd 3AND
+Xa34 cg3red cp2black a34out vdd gnd AND
+Xi3 cp3dgreen i3out vdd gnd INV
+Xn3 i3out a32out a33out a34out cout3 vdd gnd 4NOR
+
+*SOMA 4
+Xinv41 cp4dpurple cp4dpurplei vdd gnd INV
+Xa41 cp4dpurplei cg4lpurple a41out vdd gnd AND
+Xx4 cout3 a41out s4 vdd gnd XOR
+*GERA CARRY 4
+Xa42 inv01lgreen cg1pink cg2lblue cg3red cg4lpurple a42out vdd gnd 5AND
+Xa43 cg3red cg4lpurple cg2lblue cp1dblue a43out vdd gnd 4AND
+Xa44 cg4lpurple cg3red cp2black a44out vdd gnd 3AND
+Xa45 cp3dgreen cg4lpurple a45out vdd gnd AND
+Xi4 cp4dpurple i4out vdd gnd INV
+Xn4 a42out a43out a44out a45out i4out cout4 vdd gnd 5NOR
+
+*--Capacitancia/Circuito de Saida
+*Cload1 q gnd 1f
+*Cload2 qb gnd 1f
+
+*----Definicao do tipo de simulacao
+.tran 1n 50n
+
+.end
