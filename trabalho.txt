@@ -69,25 +69,25 @@ Xand4 in7 in8 out vdd gnd AND
 
 .SUBCKT 3NOR in1 in2 in3 out aliment terra
 Xnor1 in1 in2 out1 vdd gnd NOR
-Xnor11 out1 out1 out2 vdd gnd NOR
+Xinv1 out1 out2 vdd gnd INV
 Xnor2 in3 out2 out3 vdd gnd NOR
 .ends 3NOR
 
 .SUBCKT 4NOR in1 in2 in3 in4 out aliment terra
 Xnor1 in1 in2 out1 vdd gnd NOR
-Xnor11 out1 out1 out11 vdd gnd NOR
+Xnor11 out1 out11 vdd gnd INV
 Xnor2 in3 in4 out2 vdd gnd NOR
-Xnor22 out2 out2 out22 vdd gnd NOR
+Xnor22 out2 out22 vdd gnd INV
 Xnor3 out11 out22 out vdd gnd NOR
 .ends 4NOR
 
 .SUBCKT 5NOR in1 in2 in3 in4 in5 out aliment terra
 Xnor1 in1 in2 out1 vdd gnd NOR
-Xnor11 out1 out1 out11 vdd gnd NOR
+Xnor11 out1 out11 vdd gnd INV
 Xnor2 in3 in4 out2 vdd gnd NOR
-Xnor22 out2 out2 out22 vdd gnd NOR
+Xnor22 out2 out22 vdd gnd INV
 Xnor3 in5 out11 out3 vdd gnd NOR
-Xnor33 out3 out3 out33 vdd gnd NOR
+Xnor33 out3 out33 vdd gnd INV
 Xnor4 out22 out33 out vdd gnd NOR
 .ends 5NOR
 
@@ -108,18 +108,32 @@ Vb4 b4 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
 Ven cin gnd PULSE (0.9 0 10.5n 5p 5p 16n 28n)
 
 *---- Declaração do circuito
-*ENTRADAS GENERATE CARRY
-Xng a1 b1 cp1dblue vdd gnd NOR
-Xnp a1 b1 cg1pink vdd gnd NAND 
 
-Xng1 a2 b2 cp2black vdd gnd NOR
-Xnp1 a2 b2 cg2lblue vdd gnd NAND 
+*Carry propagate generate
 
-Xng2 a3 b3 cp3dgreen vdd gnd NOR
-Xnp2 a3 b3 cg3red vdd gnd NAND 
+Xcg1 a1 b1 cg1 vdd gnd AND
+Xcp1 a1 b1 cp1 vdd gnd XOR
 
-Xng3 a3 b3 cp4dpurple vdd gnd NOR
-Xnp3 a3 b3 cg4lpurple vdd gnd NAND 
+Xcg2 a2 b2 cg2 vdd gnd AND
+Xcp2 a2 b2 cp2 vdd gnd XOR
+
+Xcg3 a3 b3 cg3 vdd gnd AND
+Xcp3 a3 b3 cp3 vdd gnd XOR
+
+Xcg4 a4 b4 cg4 vdd gnd AND
+Xcp4 a4 b4 cp4 vdd gnd XOR
+
+*Soma 1
+Xx1 cin cp1 s1 vdd gnd XOR
+
+*Soma 2
+Xand1 cin cp1 and1out vdd gnd AND
+Xcout1 and1out cg1 cout1 vdd gnd OR
+Xx2 cout1 cp2 s2 vdd gnd XOR
+
+*Soma 3
+Xand2 
+Xand3 
 
 *INVERSOR
 Xinv01 cin inv01lgreen vdd gnd INV
