@@ -37,18 +37,16 @@ MN2 out   in2 terra   terra   nmos l=32n w=100n
 .ends NOR
 
 .Subckt XOR in1 in2 out aliment terra
-X1a in1 vdd gnd in1_not INV
-X1b in2 vdd gnd in2_not INV
-
-Mpa_n n1 in1_not vdd vdd PMOS W=128n L=32n
-Mpb out in2 n1 vdd PMOS W=128n L=32n
-Mpa n2 in1 vdd vdd PMOS W=128n L=32n
-Mpb_n out in2_not n2 vdd PMOS W=128n L=32n 
-
-Mnb n3 in2 gnd gnd NMOS W=64n L=32n
-Mna out in1 n3 gnd NMOS W=64n L=32n
-Mnb_n n4 in2_not gnd gnd NMOS W=64n L=32n
-Mna_n out in1_not n4 gnd NMOS W=64n L=32nx
+X1a in1 in1_not aliment terra  INV
+X1b in2 in2_not aliment terra  INV
+Mpa_n n1 in1_not aliment aliment PMOS W=128n L=32n
+Mpb out in2 n1 aliment PMOS W=128n L=32n
+Mpa n2 in1 aliment aliment PMOS W=128n L=32n
+Mpb_n out in2_not n2 aliment PMOS W=128n L=32n 
+Mnb n3 in2 terra terra NMOS W=64n L=32n
+Mna out in1 n3 terra NMOS W=64n L=32n
+Mnb_n n4 in2_not terra terra NMOS W=64n L=32n
+Mna_n out in1_not n4 terra NMOS W=64n L=32nx
 .Ends XOR
 
 .SUBCKT 3AND in1 in2 in3 out aliment terra
@@ -184,6 +182,6 @@ Xn4 a42out a43out a44out a45out i4out cout4 vdd gnd 5NOR
     Ccout4 cout4 gnd 1f
 
 *----Definicao do tipo de simulacao
-.tran 1n 50n
+.tran 0.01n 10n
 
 .end
