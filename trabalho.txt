@@ -127,13 +127,38 @@ Xcp4 a4 b4 cp4 vdd gnd XOR
 Xx1 cin cp1 s1 vdd gnd XOR
 
 *Soma 2
-Xand1 cin cp1 and1out vdd gnd AND
-Xcout1 and1out cg1 cout1 vdd gnd OR
+Xand1 cin cp1 and21out vdd gnd AND
+Xcout1 and21out cg1 cout1 vdd gnd OR
 Xx2 cout1 cp2 s2 vdd gnd XOR
 
 *Soma 3
-Xand2 
-Xand3 
+Xand2 and1out cp2 and31out vdd gnd AND
+Xand3 cg1 cp2 and32out vdd gnd AND
+Xor1 and31out and32out or31out vdd gnd OR
+
+Xcout2 or31out cg2 cout2 vdd gnd OR
+Xx3 cout2 cp3 s2 vdd gnd XOR
+
+*Soma 4
+Xand4 and31out cp3 and41out vdd gnd AND
+Xand5 and32out cp3 and42out vdd gnd AND
+Xand6 cg2 cp3 and43out vdd gnd AND
+Xor2 and41out and42out or41out vdd gnd OR
+Xor3 and43out or41out or42out vdd gnd OR
+
+Xcout3 or41out or42out cout3 vdd gnd OR
+Xx4 cout3 cp4 s3 vdd gnd XOR
+
+Xand7 and41out cp4 and51out vdd gnd AND
+Xand8 and42out cp4 and52out vdd gnd AND
+Xand9 and43out cp4 and53out vdd gnd AND
+Xand10 cg3 cp4 and54out vdd gnd AND
+Xor4 and51out and52out or51out vdd gnd OR
+Xor5 and53out and54out or52out vdd gnd OR
+Xor6 or51out or52out or53out vdd gnd OR
+
+*Soma 4
+Xand4 
 
 *INVERSOR
 Xinv01 cin inv01lgreen vdd gnd INV
