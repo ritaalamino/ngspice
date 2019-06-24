@@ -5,107 +5,65 @@
 
 *--- Declarando um sub-circuito ---
 .SUBCKT INV in out supply ground
-M1 out in supply supply pmos l=32n w=150n
-M2 out in ground ground nmos l=32n w=100n
+M1 out in supply supply pmos l=32n w=128n
+M2 out in ground ground nmos l=32n w=64n
 .ends INV
-
-.SUBCKT AND in1 in2 out aliment terra
-MP1 nand  in1 aliment aliment pmos l=32n w=150n
-MP2 nand  in2 aliment aliment pmos l=32n w=150n
-MN1 nand  in1 nodo1   terra   nmos l=32n w=200n
-MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
-Xinv nand out aliment terra INV
-.ends AND
-
-.SUBCKT NAND in1 in2 out aliment terra
-MP1 out  in1 aliment aliment pmos l=32n w=150n
-MP2 out  in2 aliment aliment pmos l=32n w=150n
-MN1 out  in1 nodo1   terra   nmos l=32n w=200n
-MN2 nodo1 in2 terra   terra   nmos l=32n w=200n
-.ends NAND
-
-.SUBCKT CGEN a1 b1 cp1 cg1 aliment terra
-Xnor a1 b1 cp1 vdd gnd NOR
-Xnand a1 b1 cg1 vdd gnd NAND
-.ends CGEN
-
-.SUBCKT NOR in1 in2 out aliment terra
-MP1 nodo1 in1 aliment aliment pmos l=32n w=300n
-MP2 out   in2 nodo1   aliment pmos l=32n w=300n
-MN1 out   in1 terra   terra   nmos l=32n w=100n
-MN2 out   in2 terra   terra   nmos l=32n w=100n
-.ends NOR
 
 .Subckt XOR in1 in2 out aliment terra
 X1a in1 in1_not aliment terra  INV
 X1b in2 in2_not aliment terra  INV
+
 Mpa_n n1 in1_not aliment aliment PMOS W=128n L=32n
 Mpb out in2 n1 aliment PMOS W=128n L=32n
 Mpa n2 in1 aliment aliment PMOS W=128n L=32n
-Mpb_n out in2_not n2 aliment PMOS W=128n L=32n 
+Mpb_n out in2_not n2 aliment PMOS W=128n L=32n
+
 Mnb n3 in2 terra terra NMOS W=64n L=32n
 Mna out in1 n3 terra NMOS W=64n L=32n
 Mnb_n n4 in2_not terra terra NMOS W=64n L=32n
 Mna_n out in1_not n4 terra NMOS W=64n L=32nx
 .Ends XOR
 
-.SUBCKT 3AND in1 in2 in3 out aliment terra
-Xand1 in1 in2 in4 vdd gnd AND
-Xand2 in3 in4 out vdd gnd AND
-.ends 3AND
+.SUBCKT AND in1 in2 out aliment terra
+MP1 nand  in1 aliment aliment pmos l=32n w=128n
+MP2 nand  in2 aliment aliment pmos l=32n w=128n
+MN1 nand  in1 nodo1   terra   nmos l=32n w=64n
+MN2 nodo1 in2 terra   terra   nmos l=32n w=64n
+Xinv nand out aliment terra INV
+.ends AND
 
-.SUBCKT 4AND in1 in2 in3 in4 out aliment terra
-Xand1 in1 in2 in5 vdd gnd AND
-Xand2 in3 in4 in6 vdd gnd AND
-Xand3 in5 in6 out vdd gnd AND
-.ends 4AND
-
-.SUBCKT 5AND in1 in2 in3 in4 in5 out aliment terra
-Xand1 in1 in2 in6 vdd gnd AND
-Xand2 in3 in4 in7 vdd gnd AND
-Xand3 in5 in6 in8 vdd gnd AND
-Xand4 in7 in8 out vdd gnd AND
-.ends 5AND
-
-.SUBCKT 3NOR in1 in2 in3 out aliment terra
-Xnor1 in1 in2 out1 vdd gnd NOR
-Xinv1 out1 out2 vdd gnd INV
-Xnor2 in3 out2 out3 vdd gnd NOR
-.ends 3NOR
-
-.SUBCKT 4NOR in1 in2 in3 in4 out aliment terra
-Xnor1 in1 in2 out1 vdd gnd NOR
-Xnor11 out1 out11 vdd gnd INV
-Xnor2 in3 in4 out2 vdd gnd NOR
-Xnor22 out2 out22 vdd gnd INV
-Xnor3 out11 out22 out vdd gnd NOR
-.ends 4NOR
-
-.SUBCKT 5NOR in1 in2 in3 in4 in5 out aliment terra
-Xnor1 in1 in2 out1 vdd gnd NOR
-Xnor11 out1 out11 vdd gnd INV
-Xnor2 in3 in4 out2 vdd gnd NOR
-Xnor22 out2 out22 vdd gnd INV
-Xnor3 in5 out11 out3 vdd gnd NOR
-Xnor33 out3 out33 vdd gnd INV
-Xnor4 out22 out33 out vdd gnd NOR
-.ends 5NOR
-
+.SUBCKT OR in1 in2 out aliment terra
+MP1 nodo1 in1 aliment aliment pmos l=32n w=128n
+MP2 outp   in2 nodo1   aliment pmos l=32n w=128n
+MN1 outp   in1 terra   terra   nmos l=32n w=64n
+MN2 outp   in2 terra   terra   nmos l=32n w=64n
+Xinv outp out aliment terra INV
+.ends OR
 
 *----Declaracao das fontes---
 * Fonte de Alimentação
-
-Vvdd vdd gnd 0.9V
+    Vvdd vdd gnd 0.9V
+    
 * Fonte descrevendo o sinal de entrada
-Va1 a1 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
-Vb1 b1 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
-Va2 a2 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
-Vb2 b2 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
-Va3 a3 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
-Vb3 b3 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
-Va4 a4 gnd PULSE (0.9 0 1n 5p 5p 3n 6n)
-Vb4 b4 gnd PULSE (0 0.9 2n 5p 5p 1n 3n)
-Ven cin gnd PULSE (0.9 0 10.5n 5p 5p 16n 28n)
+Va1 a1 gnd 0.9
+Vb1 b1 gnd PWL (0n 0 10n 0 10.01n 0.9)
+Va2 a2 gnd 0.9
+Vb2 b2 gnd 0
+Va3 a3 gnd 0.9
+Vb3 b3 gnd 0
+Va4 a4 gnd 0.9
+Vb4 b4 gnd 0
+Ven cin gnd 0
+
+*Va1 a1 gnd PWL (0n 0 10n 0 10.01n 0.9 20n 0.9)
+*Vb1 b1 gnd PWL (0n 0 5n 0 5.01n 0.9 10n 0.9 10.01n 0 15n 0 15.01n 0.9 20n 0.9)
+*Va2 a2 gnd PWL (0n 0 10n 0 10.01n 0.9 20n 0.9)
+*Vb2 b2 gnd PWL (0n 0 5n 0 5.01n 0.9 10n 0.9 10.01n 0 15n 0 15.01n 0.9 20n 0.9)
+*Va3 a3 gnd PWL (0n 0 10n 0 10.01n 0.9 20n 0.9)
+*Vb3 b3 gnd PWL (0n 0 5n 0 5.01n 0.9 10n 0.9 10.01n 0 15n 0 15.01n 0.9 20n 0.9)
+*Va4 a4 gnd PWL (0n 0 10n 0 10.01n 0.9 20n 0.9)
+*Vb4 b4 gnd PWL (0n 0 5n 0 5.01n 0.9 10n 0.9 10.01n 0 15n 0 15.01n 0.9 20n 0.9)
+*Ven cin gnd 0
 
 *---- Declaração do circuito
 
@@ -128,16 +86,17 @@ Xx1 cin cp1 s1 vdd gnd XOR
 
 *Soma 2
 Xand1 cin cp1 and21out vdd gnd AND
+
 Xcout1 and21out cg1 cout1 vdd gnd OR
 Xx2 cout1 cp2 s2 vdd gnd XOR
 
 *Soma 3
-Xand2 and1out cp2 and31out vdd gnd AND
+Xand2 and21out cp2 and31out vdd gnd AND
 Xand3 cg1 cp2 and32out vdd gnd AND
 Xor1 and31out and32out or31out vdd gnd OR
 
 Xcout2 or31out cg2 cout2 vdd gnd OR
-Xx3 cout2 cp3 s2 vdd gnd XOR
+Xx3 cout2 cp3 s3 vdd gnd XOR
 
 *Soma 4
 Xand4 and31out cp3 and41out vdd gnd AND
@@ -147,7 +106,7 @@ Xor2 and41out and42out or41out vdd gnd OR
 Xor3 and43out or41out or42out vdd gnd OR
 
 Xcout3 or41out or42out cout3 vdd gnd OR
-Xx4 cout3 cp4 s3 vdd gnd XOR
+Xx4 cout3 cp4 s4 vdd gnd XOR
 
 Xand7 and41out cp4 and51out vdd gnd AND
 Xand8 and42out cp4 and52out vdd gnd AND
@@ -157,70 +116,31 @@ Xor4 and51out and52out or51out vdd gnd OR
 Xor5 and53out and54out or52out vdd gnd OR
 Xor6 or51out or52out or53out vdd gnd OR
 
-*Soma 4
-Xand4 
-
-*INVERSOR
-Xinv01 cin inv01lgreen vdd gnd INV
-Xinv02 inv01lgreen inv02 vdd gnd INV
-
-*SOMA 1
-Xinva11 cp1dblue cp1dbluei vdd gnd INV
-Xa11 cp1dbluei cg1pink a11out vdd gnd AND
-Xx1 inv02 a11out s1 vdd gnd XOR
-*GERA CARRY 1
-Xa12 inv01lgreen cg1pink a12out vdd gnd AND
-Xi1 cp1dblue i1out vdd gnd INV
-Xn1 a12out i1out cout1 vdd gnd NOR
-
-*SOMA 2
-Xinva21 cp2black cp2blacki vdd gnd INV
-Xa21 cp2blacki cg2lblue a21out vdd gnd AND
-Xx2 cout1 a21out s2 vdd gnd XOR
-*GERA CARRY 2
-Xa22 inv01lgreen cg1pink cg2lblue a22out vdd gnd 3AND
-Xa23 cg2lblue cp1dblue a23out vdd gnd AND
-Xi2 cp2black i2out vdd gnd INV
-Xn2 a22out a23out i2out cout2 vdd gnd 3NOR
-
-*SOMA 3
-Xinva31 cp3dgreen cp3dgreeni vdd gnd INV
-Xa31 cg3red cp3dgreeni a31out vdd gnd AND
-Xx3 cout2 a31out s3 vdd gnd XOR
-*GERA CARRY 3
-Xa32 inv01lgreen cg3red cg1pink cg2lblue a32out vdd gnd 4AND
-Xa33 cg3red cg2lblue cp1dblue a33out vdd gnd 3AND
-Xa34 cg3red cp2black a34out vdd gnd AND
-Xi3 cp3dgreen i3out vdd gnd INV
-Xn3 i3out a32out a33out a34out cout3 vdd gnd 4NOR
-
-*SOMA 4
-Xinv41 cp4dpurple cp4dpurplei vdd gnd INV
-Xa41 cp4dpurplei cg4lpurple a41out vdd gnd AND
-Xx4 cout3 a41out s4 vdd gnd XOR
-*GERA CARRY 4
-Xa42 inv01lgreen cg1pink cg2lblue cg3red cg4lpurple a42out vdd gnd 5AND
-Xa43 cg3red cg4lpurple cg2lblue cp1dblue a43out vdd gnd 4AND
-Xa44 cg4lpurple cg3red cp2black a44out vdd gnd 3AND
-Xa45 cp3dgreen cg4lpurple a45out vdd gnd AND
-Xi4 cp4dpurple i4out vdd gnd INV
-Xn4 a42out a43out a44out a45out i4out cout4 vdd gnd 5NOR
+Xcout4 or53out cg3 cout4 vdd gnd OR
 
 *--Capacitancia/Circuito de Saida
-*Cload1 q gnd 1f
-*Cload2 qb gnd 1f
 * Capacitância da saída
-    Csum0 s1 gnd 1f
-    Csum1 s2 gnd 1f
-    Csum2 s3 gnd 1f
-    Csum3 s4 gnd 1f
+Csum0 s1 gnd 1f
+Csum1 s2 gnd 1f
+Csum2 s3 gnd 1f
+Csum3 s4 gnd 1f
 
-    Ccout1 cout1 gnd 1f
-    Ccout2 cout2 gnd 1f
-    Ccout3 cout3 gnd 1f
-    Ccout4 cout4 gnd 1f
+Ccout1 cout1 gnd 1f
+Ccout2 cout2 gnd 1f
+Ccout3 cout3 gnd 1f
+Ccout4 cout4 gnd 1f
 
 *----Definicao do tipo de simulacao
-.tran 0.01n 10n
+.tran 0.01ns 20ns
+
+.control
+    run
+    plot a1 b1+1 a2+2 b2+3 a3+4 b4+5 a4+6 b4+7 s1+8 s2+9 s3+10 s4+11 cout4+12
+.endc
+
+*.measure tran tcritico trig v(a1) val=0.45 rise=1 targ v(cout4) val=0.45 rise=1
+.measure tran tcritico trig v(b1) val=0.45 rise=1 targ v(cout4) val=0.45 rise=1
+.measure tran tcritico trig v(b1) val=0.45 rise=1 targ v(s4) val=0.45 fall=1
+*.measure tran tcritico trig v(cin) val=0.45 rise=1 targ v(cout4) val=0.45 rise=1
 
 .end
